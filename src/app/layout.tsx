@@ -1,11 +1,10 @@
+import Header from "@/components/Header";
+import { ReduxProvider } from "@/globalredux/ReduxProvider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "../theme/css/globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import { ClientThemeProvider } from "../theme/ThemeProvider";
-import { ReduxProvider } from "@/globalredux/ReduxProvider";
-import Header from "@/components/Header";
-import { cookies } from "next/headers";
+import "../theme/css/globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 

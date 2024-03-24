@@ -10,6 +10,7 @@ const Loader: React.FC<loadingProps> = ({ w, h }) => {
   const height = h ? String(h) : "h-4";
 
   return (
+    // Spinner was taken from flowbite
     <svg
       aria-hidden="true"
       className={`${width} ${height} text-gray-200 animate-spin dark:text-gray-600 fill-blue-900 dark:fill-orange-600`}

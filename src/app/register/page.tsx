@@ -16,32 +16,37 @@ type pageProps = {};
 const Page: React.FC<pageProps> = () => {
   const router = useRouter();
 
+  // Redux dispatch function
   const dispatch = useAppDispatch();
 
+  // State variables for form handling
   const [userData, setUserData] = useState<Partial<UserData>>({
     nama: "",
     phone: "",
     password: "",
   });
-
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+  // State variables for password visibility toggling
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
 
+  // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
+  // Toggle confirm password visibility
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(
       (prevShowConfirmPassword) => !prevShowConfirmPassword
     );
   };
 
+  // Handler function to limit phone number input to 16 characters and allow only numbers
   const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
     // Limit to 16 characters
@@ -54,50 +59,57 @@ const Page: React.FC<pageProps> = () => {
     e.target.value = newValue;
 
     const { name } = e.target;
-    // Use spread operator to update the state, preserving other values
+    // Update only the field that changed
     setUserData({
       ...userData,
-      [name]: value, // Update only the field that changed
+      [name]: value,
     });
   };
 
   // Handler function to update the state when input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    // Use spread operator to update the state, preserving other values
+    // Update only the field that changed
     setUserData({
       ...userData,
-      [name]: value, // Update only the field that changed
+      [name]: value,
     });
   };
 
+  // Handler function for confirm password input change
   const handleConfirmPasswordChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setConfirmPassword(e.target.value);
   };
 
+  // Form submission handler
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Check if passwords match
     if (userData.password !== confirmPassword) {
       setError("Passwords do not match");
       setIsSubmitting(false);
       return;
     }
 
+    // Check for empty fields in user data
     const isUserDataEmpty = hasEmptyValue(userData);
-
     if (isUserDataEmpty[0]) {
       setError(`Invalid value on ${isUserDataEmpty[1].toUpperCase()}`);
       setIsSubmitting(false);
       return;
     }
-    // Passwords match, continue with form submission
+
+    // Clear error state
     setError("");
 
+    // Dispatch action to edit user data
     dispatch(editUser(userData));
 
+    // Redirect to login page
     router.push("/login");
 
     setIsSubmitting(false);
@@ -107,14 +119,16 @@ const Page: React.FC<pageProps> = () => {
     <>
       <div className="relative h-screen overflow-hidden">
         <div className="flex bg-blue-900 dark:bg-orange-600 h-full items-center justify-center">
-          {/* Donut Top Left */}
+          {/* Logo top left */}
           <div className="absolute top-0 left-0 h-[10rem] w-[26rem] ml-8 z-[999]">
             <Image src="/logo.png" width={480} height={320} alt="" />
           </div>
+          {/* Donut Top Left */}
           <div className="absolute top-[-20rem] left-[-20rem] h-[40rem] w-[40rem] bg-transparent">
             <div className="h-full w-full rounded-full bg-neutral-50 opacity-5"></div>
             <div className="absolute inset-[11rem] h-58 w-58 rounded-full bg-blue-900 dark:bg-orange-600"></div>
           </div>
+          {/* Regist form */}
           <form className="flex flex-col gap-4 z-[998]" onSubmit={handleSubmit}>
             <h2 className="text-6xl font-bold text-neutral-50 ">
               Daftarkan Akun
@@ -177,13 +191,13 @@ const Page: React.FC<pageProps> = () => {
                   placeholder="Masukkan password Anda"
                   onChange={handleInputChange}
                 />
+                {/* Toggle eye icon */}
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
                   className="absolute inset-y-0 right-0 flex items-center px-8 text-gray-500 focus:outline-none"
                 >
                   {showPassword ? <FaEye className="text-white" /> : <FaEye />}{" "}
-                  {/* Toggle eye icon */}
                 </button>
               </div>
             </div>
@@ -205,6 +219,7 @@ const Page: React.FC<pageProps> = () => {
                   onChange={handleConfirmPasswordChange}
                   value={confirmPassword}
                 />
+                {/* Toggle eye icon */}
                 <button
                   type="button"
                   onClick={toggleConfirmPasswordVisibility}
@@ -215,7 +230,6 @@ const Page: React.FC<pageProps> = () => {
                   ) : (
                     <FaEye />
                   )}{" "}
-                  {/* Toggle eye icon */}
                 </button>
               </div>
             </div>

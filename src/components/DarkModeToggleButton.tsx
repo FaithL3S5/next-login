@@ -2,18 +2,24 @@
 
 import { useEffect, useState } from "react";
 
+// Component for toggling dark mode
 const DarkModeToggleButton: React.FC = () => {
+  // State variable to track dark mode status
   const [darkMode, setDarkMode] = useState<boolean>(false);
 
+  // Retrieve user's theme preference from local storage
   let userTheme =
     typeof window !== "undefined" && window.localStorage.getItem("theme");
+
+  // Check system's preferred color scheme
   let systemTheme =
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-  // initial theme check
+  // Function to check and set the initial theme
   const themeCheck = () => {
     if (userTheme === "dark" || (!userTheme && systemTheme)) {
+      // Apply dark mode styles
       document.documentElement.classList.add("dark");
       setDarkMode(true);
       return;
@@ -21,23 +27,27 @@ const DarkModeToggleButton: React.FC = () => {
     setDarkMode(false);
   };
 
-  // manual theme switch
+  // Function to toggle between light and dark mode
   const themeSwitch = () => {
     if (document.documentElement.classList.contains("dark")) {
+      // Switch to light mode
       document.documentElement.classList.remove("dark");
       localStorage.setItem("theme", "light");
       setDarkMode(false);
       return;
     }
+    // Switch to dark mode
     document.documentElement.classList.add("dark");
     localStorage.setItem("theme", "dark");
     setDarkMode(true);
   };
 
+  // Run theme check on component mount
   useEffect(() => {
     themeCheck();
   }, []);
 
+  // Render toggle switch
   return (
     <label className="inline-flex items-center cursor-pointer">
       <span className="me-3 text-sm font-medium text-blue-500 dark:text-black">

@@ -1,24 +1,26 @@
 "use client";
 
 import DarkModeToggleButton from "@/components/DarkModeToggleButton";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { FaEye } from "react-icons/fa";
-import { useAppSelector } from "@/globalredux/hooks";
+import Loader from "@/components/Loader";
 import { UserData } from "@/globalredux/features/user/userSlice";
+import { useAppSelector } from "@/globalredux/hooks";
 import { encrypt, hasEmptyValue } from "@/reusables/helper";
 import { getCookie, setCookie } from "cookies-next";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
-import Loader from "@/components/Loader";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { FaEye } from "react-icons/fa";
 
 type pageProps = {};
 
 const Page: React.FC<pageProps> = () => {
   const router = useRouter();
 
+  // Get the user data from Redux store
   const user = useAppSelector((state) => state.user.user);
 
+  // State variables for form handling
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
@@ -27,6 +29,7 @@ const Page: React.FC<pageProps> = () => {
     password: "",
   });
 
+  // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
@@ -34,25 +37,27 @@ const Page: React.FC<pageProps> = () => {
   // Handler function to update the state when input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    // Use spread operator to update the state, preserving other values
+    // Update only the field that changed
     setUserData({
       ...userData,
-      [name]: value, // Update only the field that changed
+      [name]: value,
     });
   };
 
+  // Form submission handler
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Check for empty fields in user data
     const isUserDataEmpty = hasEmptyValue(userData);
-
     if (isUserDataEmpty[0]) {
       setError(`Invalid value on ${isUserDataEmpty[1].toUpperCase()}`);
       setIsSubmitting(false);
       return;
     }
 
+    // Validate user credentials
     if (userData.nama !== user.nama || userData.password !== user.password) {
       setError("Invalid credentials");
       setIsSubmitting(false);
@@ -61,9 +66,9 @@ const Page: React.FC<pageProps> = () => {
 
     setError("");
 
+    // Set session cookie upon successful login
     const expires = new Date(Date.now() + 60 * 1000);
     const session = await encrypt({ user, expires });
-
     setCookie("session", session, {
       expires,
       httpOnly: false,
@@ -71,11 +76,13 @@ const Page: React.FC<pageProps> = () => {
       secure: false,
     });
 
+    // Redirect to profile page
     router.push("/profile");
 
     setIsSubmitting(false);
   };
 
+  // Check if it's the user's first visit and redirect to register page if true
   useEffect(() => {
     const isFirstVisit = getCookie("isFirstVisit");
 
@@ -94,24 +101,29 @@ const Page: React.FC<pageProps> = () => {
     <div className="grid grid-cols-2 h-screen w-screen">
       {/* Blue Section */}
       <div className="relative overflow-hidden">
+        {/* Background Elements */}
         <div className="flex bg-blue-900 dark:bg-orange-600 h-full items-center justify-center">
           {/* Donut Top Left */}
           <div className="absolute top-[-20rem] left-[-20rem] h-[40rem] w-[40rem] bg-transparent">
+            {/* Outer circle */}
             <div className="h-full w-full rounded-full bg-neutral-50 opacity-5"></div>
+            {/* Inner circle */}
             <div className="absolute inset-[11rem] h-58 w-58 rounded-full bg-blue-900 dark:bg-orange-600"></div>
           </div>
+          {/* Content */}
           <div className="flex flex-col items-center gap-4">
+            {/* Image and Title */}
             <div className="text-center">
               <Image src="/stone.jpg" width={400} height={400} alt="" />
             </div>
             <h2 className="text-center text-6xl font-bold text-white">LOREM</h2>
-            {/* Text Carousel Start Here */}
-            {/* Text Carousel's text */}
+            {/* Text Carousel */}
+            {/* Placeholder text */}
             <div className="text-center w-[50%] text-white">
               Lorem ipsum, dolor sit amet consectetur adipisicing elit.
             </div>
             {/* Text Carousel control */}
-            {/* how do i make it? */}
+            {/* How to implement? */}
           </div>
           {/* Rectangles Bot Right */}
           <div className="absolute bottom-[-28rem] left-[40rem] h-[40rem] w-[40rem] bg-transparent">
@@ -125,11 +137,14 @@ const Page: React.FC<pageProps> = () => {
 
       {/* White Section */}
       <div className="relative overflow-hidden">
+        {/* Dark mode toggle button */}
         <div className="absolute top-0 right-0 text-black mt-4 mr-4">
           <DarkModeToggleButton />
         </div>
+        {/* Form Section */}
         <div className="flex bg-neutral-50 h-full items-center justify-center">
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            {/* Title and Instruction */}
             <h2 className="text-6xl font-bold text-blue-900 dark:text-orange-600">
               Silahkan Login
             </h2>
@@ -172,6 +187,7 @@ const Page: React.FC<pageProps> = () => {
                   placeholder="Password Anda..."
                   onChange={handleInputChange}
                 />
+                {/* Password visibility toggle */}
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
@@ -181,12 +197,12 @@ const Page: React.FC<pageProps> = () => {
                     <FaEye className="text-blue-900 dark:text-orange-600" />
                   ) : (
                     <FaEye />
-                  )}{" "}
+                  )}
                   {/* Toggle eye icon */}
                 </button>
               </div>
             </div>
-            {/* error message */}
+            {/* Error message */}
             <p
               className={`${
                 error.length < 1 ? "invisible" : ""
